@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Free Alpha Trainer nutrition quiz: 12 questions, 4 profiles, and a 14-day plan to fix what's holding you back.">
+<link rel="icon" href="/assets/favicon-32.png" type="image/png">
+<title>What's Holding You Back?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: single phone-width column of numbered "stations"; sticky progress rail on top; quiz routes into a tabbed profile console. Single dark look, matching the printed guide. */
+:root{
+  --void:#07050c; --panel:#120b1d; --panel2:#1a1029; --line:#2c1d44;
+  --violet:#b04dff; --violet-soft:#c98bff; --fg:#ece6f5; --muted:#a297b4; --dim:#6f6585;
+  --ok:#5fe3a1; --warn:#ffb54d;
+  --display:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--void);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(ellipse 120% 40% at 50% 0%,#2a1145 0%,transparent 60%);background-repeat:no-repeat}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px;border-radius:6px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(7,5,12,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:640px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.bar-brand{font-weight:700;font-size:11px;letter-spacing:.22em;color:var(--violet);white-space:nowrap}
+.bar-nav{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+.bar-nav::-webkit-scrollbar{display:none}
+.bar-nav a{flex:none;font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--line);border-radius:99px}
+.bar-nav a:hover{color:var(--fg);border-color:var(--violet)}
+
+/* hero */
+.hero{text-align:center;padding-block:28px 8px}
+.crest{width:200px;max-width:60%;margin:0 auto;display:block;mix-blend-mode:screen;-webkit-mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 55%,transparent 100%);mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,#000 55%,transparent 100%)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(34px,9vw,52px);line-height:1.02;letter-spacing:-.01em;margin:14px 0 0;text-wrap:balance;
+  background:linear-gradient(180deg,#fff 0%,#d9d2e6 45%,#8e86a0 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{margin-top:14px;font-size:12px;letter-spacing:.32em;color:var(--muted);font-weight:500}
+.tag b{color:var(--violet);font-weight:500;margin:0 6px}
+.pill{display:inline-block;margin-top:18px;padding:9px 22px;border:1.5px solid var(--violet);border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.28em;color:var(--violet-soft);box-shadow:0 0 24px rgba(176,77,255,.25)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:14px;margin-top:24px;background:var(--panel)}
+.stats div{padding:14px 6px;text-align:center}
+.stats div+div{border-left:1px solid var(--line)}
+.stats b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.stats span{font-size:10px;letter-spacing:.2em;color:var(--muted)}
+.cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;border:1px solid var(--violet);background:var(--violet);color:#14071f;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--violet-soft)}
+.btn.ghost{background:transparent;color:var(--violet-soft)}
+.btn.ghost:hover{background:rgba(176,77,255,.12)}
+.btn.sm{padding:7px 12px;font-size:12px;border-radius:9px}
+
+/* sections */
+section{scroll-margin-top:64px;margin-top:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 18px}
+.kicker{display:flex;align-items:center;gap:10px}
+.code{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--violet);border:1px solid var(--violet);border-radius:5px;padding:2px 6px;letter-spacing:.06em}
+h2{font-family:var(--display);font-size:20px;font-weight:700;margin:0;letter-spacing:.01em;text-transform:uppercase;text-wrap:balance;line-height:1.2}
+.sub{font-size:10.5px;font-weight:700;letter-spacing:.22em;color:var(--dim);margin:6px 0 14px;text-transform:uppercase}
+h3{font-size:16px;margin:0 0 4px;font-weight:700}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--violet);text-transform:uppercase;margin:18px 0 8px}
+.lbl::before{content:"// "}
+p{margin:0 0 10px}
+.muted{color:var(--muted)}
+.badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.16em;background:var(--violet);color:#14071f;border-radius:5px;padding:2px 8px;margin-bottom:6px;text-transform:uppercase}
+.note{border:1px solid var(--line);border-left:3px solid var(--violet);background:var(--panel2);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:14px}
+.note b{color:var(--violet-soft)}
+.stack>*+*{border-top:1px dashed var(--line);padding-top:14px;margin-top:14px}
+.rows{display:grid}
+.rows>div{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.rows>div>b{color:var(--violet-soft);font-weight:700}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:10px;letter-spacing:.18em;color:var(--violet);text-align:left;padding:8px 10px;border:1px solid var(--line);text-transform:uppercase}
+.tbl td{padding:8px 10px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tbl td:last-child{white-space:nowrap}
+.scroll{overflow-x:auto}
+
+/* profiles preview list */
+.who{display:grid;gap:8px}
+.who button{display:grid;grid-template-columns:minmax(0,40%) minmax(0,1fr);gap:12px;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer}
+.who button:hover{border-color:var(--violet)}
+.who b{color:var(--violet);font-weight:700}
+.who span{color:var(--fg);font-size:14px}
+
+/* steps */
+ol.steps{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+ol.steps li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;font-size:14px}
+ol.steps i{font-style:normal;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--violet);border:1px solid var(--violet);border-radius:6px;height:24px;display:grid;place-items:center}
+
+/* quiz */
+.qprog{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.qtrack{flex:1;height:6px;background:var(--line);border-radius:99px;overflow:hidden}
+.qfill{height:100%;background:var(--violet);width:0;transition:width .3s}
+.qcount{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.q{padding:14px 0;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0}
+.q h3{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start;font-size:15px}
+.q h3 i{font-style:normal;background:var(--violet);color:#14071f;border-radius:8px;height:30px;display:grid;place-items:center;font-size:13px}
+.opts{display:grid;gap:6px;margin:10px 0 0 40px}
+.opt{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;text-align:left;padding:10px 12px;border:1px solid var(--line);background:transparent;border-radius:10px;cursor:pointer;font-size:14px;color:var(--muted);transition:border-color .15s,background .15s}
+.opt b{color:var(--violet)}
+.opt:hover{border-color:var(--violet);color:var(--fg)}
+.opt[aria-pressed="true"]{background:rgba(176,77,255,.16);border-color:var(--violet);color:var(--fg)}
+.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.tally div{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 6px;text-align:center}
+.tally b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
+.tally span{font-size:10px;letter-spacing:.14em;color:var(--muted)}
+.tally .lead{border-color:var(--violet);box-shadow:0 0 18px rgba(176,77,255,.25)}
+.result{margin-top:16px;padding:16px;border-radius:14px;border:1px solid var(--violet);background:linear-gradient(160deg,#2a1145,#160c24)}
+.result h3{font-size:20px}
+.result .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* profile console */
+.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:14px}
+.tab{padding:10px 4px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);line-height:1.2;position:relative}
+.tab[aria-selected="true"]{border-color:var(--violet);color:var(--fg);background:rgba(176,77,255,.14)}
+.tab .you{position:absolute;top:-8px;right:-4px;font-size:9px;letter-spacing:.1em;background:var(--violet);color:#14071f;border-radius:5px;padding:1px 5px;font-weight:700}
+.subtabs{display:flex;gap:6px;margin:4px 0 14px;flex-wrap:wrap}
+.subtab{padding:6px 12px;border:1px solid var(--line);border-radius:99px;background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted)}
+.subtab[aria-selected="true"]{border-color:var(--violet);color:var(--violet-soft)}
+.quote{font-size:11px;letter-spacing:.2em;color:var(--dim);font-weight:700;text-transform:uppercase;margin:4px 0 0}
+
+.checks{list-style:none;padding:0;margin:0;display:grid;gap:4px}
+.chk{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;padding:7px 4px;cursor:pointer;font-size:14px;border-radius:8px}
+.chk:hover{background:rgba(176,77,255,.06)}
+.chk input{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:1.5px solid var(--violet);border-radius:5px;margin:1px 0 0;display:grid;place-items:center;cursor:pointer}
+.chk input:checked{background:var(--violet)}
+.chk input:checked::after{content:"";width:10px;height:5px;border-left:2px solid #14071f;border-bottom:2px solid #14071f;transform:rotate(-45deg) translate(1px,-1px)}
+.chk input:checked+span{color:var(--fg)}
+.chk span{color:var(--muted)}
+.meter{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13px}
+.dots{display:flex;gap:4px}
+.dots i{width:14px;height:6px;border-radius:3px;background:var(--line)}
+.dots i.on{background:var(--violet)}
+.dots i.on.hit{background:var(--ok)}
+.verdict{font-weight:600}
+.verdict.hit{color:var(--ok)}
+
+.day{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.day.done h3{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--violet)}
+.done-btn{border:1px solid var(--line);background:none;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;white-space:nowrap}
+.day.done .done-btn{background:var(--violet);border-color:var(--violet);color:#14071f}
+.daybar{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:13px;color:var(--muted)}
+
+.swap{display:grid;grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr);gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+.swap s{color:var(--dim)}
+.swap em{font-style:normal;color:var(--violet)}
+
+/* inputs */
+.field{width:100%;background:var(--void);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px;min-width:0}
+.field:focus{border-color:var(--violet);outline:none}
+textarea.field{resize:vertical;min-height:56px}
+.tdays{display:grid;gap:12px}
+.tday{border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel2);display:grid;gap:8px}
+.tday h3{font-size:14px}
+.tday label{font-size:11px;letter-spacing:.14em;color:var(--violet);font-weight:700;text-transform:uppercase}
+.hunger{display:flex;gap:6px}
+.hunger button{flex:1;padding:7px 0;border:1px solid var(--line);border-radius:8px;background:none;cursor:pointer;font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted)}
+.hunger button[aria-pressed="true"]{background:var(--violet);color:#14071f;border-color:var(--violet)}
+
+.goal{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.wk{display:grid;grid-template-columns:52px repeat(4,minmax(0,1fr)) 64px;gap:6px;align-items:center;margin-bottom:6px}
+.wk .field{padding:7px 4px;text-align:center;font-variant-numeric:tabular-nums}
+.wk-h{font-size:10px;letter-spacing:.14em;color:var(--violet);font-weight:700;text-transform:uppercase}
+.wk b{font-size:13px}
+.avg{font-family:var(--mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums}
+.wkx{display:grid;grid-template-columns:52px minmax(0,1fr) minmax(0,2fr);gap:6px;margin:0 0 12px}
+.advice{margin-top:12px}
+
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:700;list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 20px;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--violet);font-weight:700;text-align:right}
+details[open] summary::after{content:"−"}
+details p{margin:8px 0 0;color:var(--muted);font-size:14px}
+
+.offer{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel)}
+.offer.main{border-color:var(--violet);box-shadow:0 0 28px rgba(176,77,255,.18)}
+.offer .eb{font-size:10px;letter-spacing:.2em;color:var(--violet);font-weight:700}
+.offer h3{font-size:20px;margin:6px 0}
+.offer .x{margin-top:12px;border:1px solid var(--violet);background:#0f2a24;border-radius:10px;padding:10px 12px;font-weight:700;font-size:14px}
+.kw{color:var(--violet-soft);font-weight:700}
+.copy{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.foot{text-align:center;margin-top:30px;color:var(--dim);font-size:11px;letter-spacing:.22em}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--violet);color:#14071f;font-weight:700;padding:9px 16px;border-radius:99px;font-size:13px;transition:.25s;pointer-events:none;z-index:40}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.reset{background:none;border:0;color:var(--dim);font-size:12px;text-decoration:underline;cursor:pointer;margin-top:8px}
+@media (max-width:420px){.opts{margin-left:0}.wk{grid-template-columns:40px repeat(4,minmax(0,1fr)) 56px}.wkx{grid-template-columns:40px minmax(0,1fr) minmax(0,2fr)}}
+</style>
+<style>[hidden]{display:none!important}img{max-width:100%}body{margin:0}</style>
+</head>
+<body>
+
+
+<header class="bar"><div class="bar-in">
+  <a class="bar-brand" href="/" title="Back to Alpha Trainer" style="text-decoration:none">&lsaquo;&nbsp;ALPHA&nbsp;TRAINER</a>
+  <nav class="bar-nav" aria-label="Sections">
+    <a href="#quiz">Quiz</a><a href="#profiles">Profiles</a><a href="#mix">Mix</a><a href="#test">3-Day Test</a><a href="#plan">14-Day Plan</a><a href="#checkin">Check-In</a><a href="#extras">Extras</a><a href="#next">Next</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <div class="hero">
+    <img class="crest" src="data:image/jpeg;base64,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" alt="Alpha Trainer crest">
+    <h1>WHAT'S HOLDING YOU BACK?</h1>
+    <div class="tag">FIND IT<b>/</b>FIX IT<b>/</b>KEEP IT</div>
+    <div class="pill">ALPHA TRAINER NUTRITION</div>
+    <div class="stats"><div><b>4</b><span>PROFILES</span></div><div><b>12</b><span>QUESTIONS</span></div><div><b>14</b><span>DAY PLAN</span></div></div>
+    <div class="cta"><a class="btn" href="#quiz">Take the quiz</a><a class="btn ghost" href="#profiles">Browse profiles</a></div>
+  </div>
+
+  <section class="card">
+    <div class="lbl" style="margin-top:0">Which one sounds like you?</div>
+    <div class="who" id="who"></div>
+  </section>
+
+  <section class="card" id="how">
+    <div class="lbl" style="margin-top:0">How to use this</div>
+    <ol class="steps">
+      <li><i>01</i><div><b>Take the 12-question quiz.</b> <span class="muted">It takes 2 minutes and finds your profile.</span></div></li>
+      <li><i>02</i><div><b>Read your profile.</b> <span class="muted">The checklist, what is happening and the tell.</span></div></li>
+      <li><i>03</i><div><b>Do the 7-day fix.</b> <span class="muted">One day at a time. Tap each day done as you go.</span></div></li>
+      <li><i>04</i><div><b>Run the 3-Day Test.</b> <span class="muted">It shows you what you actually eat.</span></div></li>
+      <li><i>05</i><div><b>Check in weekly.</b> <span class="muted">Weigh, average, adjust one thing. The tracker does the math.</span></div></li>
+      <li><i>06</i><div><b>Not medical advice.</b> <span class="muted">Allergies, a medical condition, pregnancy or a history of disordered eating? Talk to your doctor or a registered dietitian first.</span></div></li>
+    </ol>
+    <p class="muted" style="font-size:12px;margin-top:14px">Your answers and progress save on this device only.</p>
+  </section>
+
+  <section class="card" id="gaps">
+    <div class="kicker"><span class="code">01</span><h2>The 4 Gaps</h2></div>
+    <div class="sub">Why smart, hard-working people stall</div>
+    <p>Results come from what you do consistently over weeks, not from your best days. When progress stalls, it is almost always one of four gaps between what you think you are doing and what is actually happening.</p>
+    <div class="stack" id="gapList"></div>
+    <div class="note"><b>Your flat weight is your maintenance.</b> If your weekly average weight has not moved for 3+ weeks, whatever you are eating right now is your maintenance. To gain, eat above it. To lose, eat below it. You do not need a formula to start.</div>
+  </section>
+
+  <section class="card" id="quiz">
+    <div class="kicker"><span class="code">Q</span><h2>The 12-Question Quiz</h2></div>
+    <div class="sub">Tap the answer that fits you most. No wrong answers.</div>
+    <div class="qprog"><div class="qtrack"><div class="qfill" id="qfill"></div></div><div class="qcount" id="qcount">0 / 12</div></div>
+    <div id="qlist"></div>
+    <div class="tally" id="tally"></div>
+    <div id="result"></div>
+    <button class="reset" id="qreset" type="button">Clear my answers</button>
+  </section>
+
+  <section class="card" id="profiles">
+    <div class="kicker"><span class="code">P</span><h2>The Profiles</h2></div>
+    <div class="sub">Profile · 7-day fix · tools</div>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="subtabs" role="tablist" id="subtabs"></div>
+    <div id="pview"></div>
+  </section>
+
+  <section class="card" id="mix">
+    <div class="kicker"><span class="code">MIX</span><h2>More Than One Profile?</h2></div>
+    <div class="sub">What to fix first</div>
+    <div class="stack" id="mixList"></div>
+  </section>
+
+  <section class="card" id="test">
+    <div class="kicker"><span class="code">TEST</span><h2>The 3-Day Test</h2></div>
+    <div class="sub">The quickest way to see the truth</div>
+    <p>Log 3 days, including one weekend day. Change nothing. Just write it all down.</p>
+    <div class="tdays" id="tdays"></div>
+    <div class="lbl">How to read it</div>
+    <div class="rows">
+      <div><b>Light and flat weight</b><span>Under-Eater</span></div>
+      <div><b>Cannot fill it in, or it surprises you</b><span>Guesser</span></div>
+      <div><b>Weekend day looks very different</b><span>Weekend Reset</span></div>
+      <div><b>A slip changed the rest of the day</b><span>All-or-Nothing</span></div>
+    </div>
+    <div class="copy"><button class="btn sm ghost" type="button" id="copyTest">Copy my log</button></div>
+  </section>
+
+  <section class="card" id="plan">
+    <div class="kicker"><span class="code">14D</span><h2>Your 14-Day Action Plan</h2></div>
+    <div class="sub">One fix at a time</div>
+    <div class="daybar"><div class="dots" id="planDots"></div><span id="planCount"></span></div>
+    <div class="lbl" style="margin-top:4px">Week 1 · Find it and start</div>
+    <ul class="checks" id="plan1"></ul>
+    <div class="lbl">Week 2 · Lock it in</div>
+    <ul class="checks" id="plan2"></ul>
+    <div class="note"><b>Review on day 14:</b> Compare your weekly averages. Keep what is working, drop what is not, and set a goal for the next 30 days.</div>
+  </section>
+
+  <section class="card" id="checkin">
+    <div class="kicker"><span class="code">CHK</span><h2>The Weekly Check-In</h2></div>
+    <div class="sub">Weigh · average · adjust</div>
+    <div class="rows">
+      <div><b>Weigh</b><span>4 mornings a week, after the bathroom, before eating or drinking</span></div>
+      <div><b>Average</b><span>Add the 4 numbers and divide by 4</span></div>
+      <div><b>Compare</b><span>Last week's average versus this week's</span></div>
+      <div><b>Adjust</b><span>Change one thing at a time, never everything</span></div>
+    </div>
+    <div class="lbl">Your goal</div>
+    <div class="goal" id="goal"></div>
+    <div class="lbl">4-week tracker</div>
+    <div class="wk"><span class="wk-h">Week</span><span class="wk-h">Wt 1</span><span class="wk-h">Wt 2</span><span class="wk-h">Wt 3</span><span class="wk-h">Wt 4</span><span class="wk-h" style="text-align:right">Avg</span></div>
+    <div id="weeks"></div>
+    <div class="note advice" id="advice"></div>
+    <div class="lbl">Decision rules</div>
+    <div class="rows">
+      <div><b>Goal: gain</b><span>Flat 2 weeks: add 150–250 calories. Over 1% a week: ease back</span></div>
+      <div><b>Goal: lose</b><span>Flat 2 weeks and tracking is accurate: trim 150–250 calories or add steps</span></div>
+      <div><b>Goal: maintain</b><span>Within about 1–2 lb is perfect. Change nothing</span></div>
+    </div>
+  </section>
+
+  <section class="card" id="extras">
+    <div class="kicker"><span class="code">SLP</span><h2>Sleep, Stress and Water</h2></div>
+    <div class="sub">The quiet levers</div>
+    <div class="stack">
+      <div><span class="badge">Sleep</span><h3>Short sleep raises intake</h3><p class="muted">A review of 11 studies found that after short sleep, people ate about 385 calories more the next day, with no extra calories burned. Aim for 7 to 9 hours.</p></div>
+      <div><span class="badge">Stress</span><h3>Plan for hard days</h3><p class="muted">Pick a non-food reset: a walk, a shower, a call. Have your good-enough meal ready for tough days.</p></div>
+      <div><span class="badge">Water</span><h3>Drink through the day</h3><p class="muted">Thirst and hunger can feel alike. A glass of water before meals is a simple habit.</p></div>
+      <div><span class="badge">Steps</span><h3>Move more every day</h3><p class="muted">Walk after meals when you can. It helps the weekend, the Guesser audit and the scale.</p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="kicker"><span class="code">MYTH</span><h2>6 Myths That Keep People Stuck</h2></div>
+    <div class="sub">Tap a myth to see what the evidence says</div>
+    <div id="myths"></div>
+  </section>
+
+  <section class="card">
+    <div class="kicker"><span class="code">FAQ</span><h2>FAQ and Plateau Troubleshooter</h2></div>
+    <div class="sub">Quick answers</div>
+    <div id="faq"></div>
+    <div class="lbl">I am stuck. Check these 4 things</div>
+    <ul class="checks" id="stuck"></ul>
+  </section>
+
+  <section class="card">
+    <div class="kicker"><span class="code">HELP</span><h2>When to Get Help</h2></div>
+    <div class="sub">This guide has limits</div>
+    <p>This is general education, not medical advice or treatment. Please talk to a doctor or registered dietitian first if you:</p>
+    <ul style="margin:0;padding-left:20px;color:var(--muted);font-size:14px;display:grid;gap:4px">
+      <li>Are pregnant or nursing</li>
+      <li>Have diabetes, a heart condition or another medical condition</li>
+      <li>Take medication that affects appetite or weight</li>
+      <li>Have a history of an eating disorder, or restrict, binge or purge</li>
+      <li>Feel anxious or out of control around food</li>
+    </ul>
+    <div class="note"><b>Support:</b> The National Alliance for Eating Disorders helpline is 866-662-1235 (weekdays 9 to 7 ET), and findEDhelp.com lists treatment options. It is not a 24/7 crisis line. For a crisis, call or text 988.</div>
+  </section>
+
+  <section class="card">
+    <div class="lbl" style="margin-top:0">The 7 rules of progress</div>
+    <div class="rows">
+      <div><b>Measure it</b><span>You cannot fix what you cannot see.</span></div>
+      <div><b>Protein first</b><span>Build every meal around it.</span></div>
+      <div><b>Weekends count</b><span>Plan them, do not escape them.</span></div>
+      <div><b>Average it</b><span>Weekly averages beat single weigh-ins.</span></div>
+      <div><b>Keep a floor</b><span>A good-enough day beats a perfect one you quit.</span></div>
+      <div><b>Sleep</b><span>7 to 9 hours. Short sleep means more eating.</span></div>
+      <div><b>Next meal</b><span>The best time to restart is always the next meal.</span></div>
+    </div>
+  </section>
+
+  <section id="next" style="display:grid;gap:12px">
+    <div class="lbl" style="margin:0">What's next</div>
+    <div class="offer main">
+      <div class="eb">1-ON-1 COACHING · DIET + TRAINING + ALPHA TRACKER</div>
+      <h3>Fix it for good</h3>
+      <p class="muted" id="coachLine">This guide shows you what is holding you back and how to start fixing it. A coach turns it into a plan: your exact calories, macros and meals, built around your life and adjusted every week, plus training and real accountability. Diet coaching is included.</p>
+      <p>DM <span class="kw">"COACH"</span> to <span class="kw">@alphatrainerhq</span> or reply to my email, and I'll send you the application.</p>
+      <div class="copy"><button class="btn sm" type="button" data-copy="COACH">Copy "COACH"</button><a class="btn sm ghost" href="https://www.instagram.com/alphatrainerhq/">Open @alphatrainerhq</a></div>
+      <div class="x">Alpha Tracker video analysis and performance reports are available only with 1-on-1 coaching.</div>
+    </div>
+    <div class="offer">
+      <div class="eb">MEMBERSHIP · COMING SOON</div>
+      <h3>New workouts every week</h3>
+      <p class="muted">Fresh sessions added to the Alpha Trainer website weekly. The website is being built, and membership opens as soon as it's finished. Want first access? DM <span class="kw">"MEMBER"</span> to <span class="kw">@alphatrainerhq</span> or reply to my email.</p>
+      <div class="copy"><button class="btn sm ghost" type="button" data-copy="MEMBER">Copy "MEMBER"</button></div>
+    </div>
+    <div class="offer">
+      <div class="eb">FREE · HIIT PROGRAM</div>
+      <h3>18 workouts, Normal and Extreme</h3>
+      <p class="muted">DM <span class="kw">"HIIT"</span> to <span class="kw">@alphatrainerhq</span> to get it.</p>
+      <div class="copy"><button class="btn sm ghost" type="button" data-copy="HIIT">Copy "HIIT"</button></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <details>
+      <summary>The research behind this guide</summary>
+      <div id="sources" style="font-size:13px;color:var(--muted);margin-top:8px;display:grid;gap:8px"></div>
+    </details>
+  </section>
+
+  <div class="foot">QUESTIONS? SEND ME A DM — I'LL POINT YOU THE RIGHT WAY.<br><span style="color:var(--violet)">@ALPHATRAINERHQ</span><br><br><a href="/" style="color:var(--muted);text-decoration:none">&larr; BACK TO ALPHA TRAINER</a></div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+const KEY="atDiag.v1";
+let S={};
+try{S=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){S={}}
+S.q=S.q||{};S.c=S.c||{};S.d=S.d||{};S.t=S.t||{};S.w=S.w||{};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),1600)}
+function copy(text,msg){
+  const done=()=>toast(msg||"Copied");
+  try{navigator.clipboard.writeText(text).then(done,fallback)}catch(e){fallback()}
+  function fallback(){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){toast("Select and copy the text")}ta.remove()}
+}
+
+const P=[
+ {id:"U",name:"The Under-Eater",short:"Under-Eater",gap:"intake",
+  line:"I train hard, but the scale and mirror barely move.",
+  quote:"I train hard, but nothing changes",
+  checks:["My weight has been flat for 3 or more weeks while training","I skip breakfast or lunch without noticing","I feel full quickly, or forget to eat until late",'My meals are mostly "light": salads, chicken, vegetables',"I am very active outside the gym (steps, job, sports)","I go hours after training without eating","I have never added up what I eat in a day",'People say "you must have a fast metabolism"'],
+  info:[["What is happening","Training and daily movement burn more than you take in, so there is no surplus to build with. Muscle needs energy and protein. Without extra fuel, the work you do in the gym cannot turn into growth."],["Why it happens","Healthy foods are often bulky and low in calories, appetite can be naturally low, busy days push meals aside, and many people fear gaining fat. Together that keeps intake just below what the body needs."],["The tell","Your weekly average weight is flat. If that is you, your current intake is your maintenance. The fix is to move above it on purpose."]],
+  fixTitle:"7-Day Fix",fixSub:"Eat on purpose",
+  fix:[["Day 1","Baseline","Write down everything you eat and when. Change nothing. Just see the real picture and the long gaps."],["Day 2","Set eating alarms","Aim for 4 or 5 eating times, about every 3 to 4 hours. Treat them like appointments."],["Day 3","Add your first 150–250","Pick 2 easy add-ons from the tools tab, such as olive oil on food and a glass of milk."],["Day 4","Add a liquid meal","A shake or smoothie is the easiest way to add 400 to 600 calories without feeling stuffed."],["Day 5","Eat after training","Within about 2 hours of your workout, eat protein plus carbs. Do not skip it."],["Day 6","Fill the gaps","Carry portable options so no gap goes over 4 hours: trail mix, jerky, bars, fruit, yogurt."],["Day 7","Review","Average your weigh-ins from 4 mornings and compare to last week. Count how many eating times you hit. Keep what worked."]],
+  fixNote:"<b>The target:</b> by the end of week 2, be eating about 300 to 500 calories a day more than your baseline, and aim to gain about 0.25–0.5% of your bodyweight per week.",
+  tools:'<div class="lbl" style="margin-top:0">Easy add-ons (approximate calories)</div><p class="muted" style="font-size:13px">Tap items to build today\'s add-on total.</p><div class="scroll"><table class="tbl" id="addons"><thead><tr><th></th><th>Add</th><th>Calories</th></tr></thead><tbody></tbody></table></div><div class="note" id="addonSum"></div><div class="lbl">Progress rules</div><div class="rows"><div><b>On track</b><span>Gaining about 0.25–0.5% of bodyweight a week</span></div><div><b>Flat for 2 weeks</b><span>Add another 150–250 calories a day</span></div><div><b>Gaining over 1% a week</b><span>Ease back. Much of it is probably fat</span></div><div><b>Protein</b><span>About 0.7–1 g per pound of bodyweight daily</span></div></div><div class="lbl">Common mistakes</div><ul class="checks"><li class="muted" style="font-size:14px">· Adding all the calories from junk food</li><li class="muted" style="font-size:14px">· Adding too much at once, then quitting</li><li class="muted" style="font-size:14px">· Cutting sleep, which slows recovery</li><li class="muted" style="font-size:14px">· Judging progress after one weigh-in</li></ul>'},
+ {id:"G",name:"The Guesser",short:"Guesser",gap:"awareness",
+  line:"I eat pretty healthy, but I couldn't tell you my numbers.",
+  quote:"I eat pretty healthy",
+  checks:["I could not tell you yesterday's calories or protein",'I eat "healthy" but the results do not match the effort',"I never weigh or measure portions",'I use words like "a handful," "a drizzle," "a splash"',"I do not count oils, sauces, drinks or bites while cooking","My weight changes and I cannot explain why","I think I eat very little, but have never checked",'I have said "I barely eat and I do not lose weight"'],
+  info:[["What is happening","Almost everyone under-counts. In a famous 1992 study, ten people who said they could not lose weight on under 1,200 calories were measured eating about 47% more than they reported and overestimating their exercise by about 51%. Their metabolisms were normal. It was a small, extreme group, but the pattern shows up across research on self-reported eating."],["The healthy halo",'"Healthy" foods feel low in calories, but nuts, oils, granola, smoothies and dressings are dense. It is easy to eat 500 extra calories of very healthy food.'],["The tell","You can describe what you eat, but you cannot say how much, in grams or calories, protein included."]],
+  fixTitle:"7-Day Audit",fixSub:"Measure for one week, not forever",
+  fix:[["Day 1","Weigh and log","Use a food scale and a notes app or tracker. Log everything: oils, sauces, drinks and bites while cooking."],["Day 2","Weigh and log","Same again. Do not try to eat differently. You are collecting data."],["Day 3","Weigh and log","Include at least one meal out, and photo anything you cannot weigh."],["Day 4","Review","Average your daily calories and protein. Circle the biggest surprise."],["Day 5","Set a protein target","Aim for 25 to 40 g of protein at each meal. Pre-log tomorrow."],["Day 6","Pick 2 defaults","Choose a default breakfast and lunch to cut daily guessing."],["Day 7","Compare","Put your audit average next to what you thought you ate. Choose one change."]],
+  fixNote:'<b>What to write for each entry:</b> the time you ate; the food, with the brand if packaged; the amount in grams or a measuring cup, not "a bowl"; and extras like oil, sauce, dressing, drinks and bites.',
+  tools:'<div class="lbl" style="margin-top:0">Where calories hide (approximate)</div><div class="scroll"><table class="tbl"><thead><tr><th>Item</th><th>Calories</th></tr></thead><tbody><tr><td>1 tbsp cooking oil</td><td>~120</td></tr><tr><td>2 tbsp salad dressing</td><td>~140</td></tr><tr><td>16 oz latte</td><td>~190</td></tr><tr><td>A handful of nuts (about 1.5 oz)</td><td>~250</td></tr><tr><td>12 oz soda</td><td>~140</td></tr><tr><td>12 oz juice</td><td>~165</td></tr><tr><td>5 oz wine</td><td>~125</td></tr><tr><td>Bites while cooking or finishing plates</td><td>100–300</td></tr></tbody></table></div><div class="lbl">Hand portions (when you cannot weigh)</div><div class="rows"><div><b>Palm</b><span>Protein: about 25–30 g</span></div><div><b>Fist</b><span>Carbs: about 1 cup cooked</span></div><div><b>Cupped hand</b><span>Nuts or granola: about 1 oz</span></div><div><b>Thumb</b><span>Oils and nut butter: about 1 tbsp</span></div></div><div class="lbl">Protein quick reference (approximate)</div><div class="scroll"><table class="tbl"><thead><tr><th>Food</th><th>Protein</th></tr></thead><tbody><tr><td>4 oz cooked chicken breast</td><td>~35 g</td></tr><tr><td>3 large eggs</td><td>~19 g</td></tr><tr><td>1 cup nonfat Greek yogurt</td><td>~22 g</td></tr><tr><td>1 cup cottage cheese</td><td>~25 g</td></tr><tr><td>1 scoop whey</td><td>~24 g</td></tr><tr><td>4 oz cooked salmon</td><td>~25 g</td></tr></tbody></table></div><div class="note"><b>Do not track forever.</b> After 2 to 4 weeks, switch to checkpoints: weigh a few mornings a week, repeat the 3-day log monthly, and track weekends if that is where you drift.</div>'},
+ {id:"W",name:"The Weekend Reset",short:"Weekend Reset",gap:"consistency",
+  line:"Monday to Friday I'm locked in. The weekend undoes it.",
+  quote:"Perfect Monday to Friday",
+  checks:["My Monday weigh-in jumps",'I say "I will start again Monday"',"Weekends are restaurants, drinks and social plans","Weekdays are strict, weekends are a free-for-all","I am very hungry by Friday night","I track on weekdays and stop on weekends",'Sunday night is a "last supper"',"I feel guilty on Monday and restrict harder"],
+  info:[["What is happening","Research on weekend patterns found adults gained weight on weekend days, driven by higher intake on Saturdays and less movement on Sundays, and that weight loss stalled on weekends in people who were dieting. Participants often did not realize they were eating more."],["The math","A 500-calorie deficit Monday to Friday saves about 2,500 calories. Two weekend days at 1,000 over cancel about 2,000 of it. You keep a fraction of the effort."],["What Monday's number really is","Weight tends to be higher on Sunday and Monday and fall during the week, which is normal and partly food volume and water. Compare Wednesday to Wednesday, or use weekly averages, instead of reacting to Monday."]],
+  fixTitle:"7-Day Fix",fixSub:"Plan the weekend like a weekday",
+  fix:[["Mon","Weigh in, then reset","No punishment, no extra cardio. Just a normal day."],["Tue · Wed","Run your week","Hit your protein and steps. Use Wednesday's weigh-in as your weekly check."],["Thu","Plan the weekend","Write down events. Pick 1 or 2 flex meals. Decide your drink limit before you go."],["Fri","Eat normally",'Do not skip meals to "save up." Prep protein for the weekend.'],["Sat","Anchor, flex, move","2 anchor meals with protein and vegetables, a flex meal at dinner, and 8,000 to 10,000 steps."],["Sun","Protect the day","Protein at breakfast, a walk or workout, then groceries and prep for Monday."],["Mon","Compare averages","Look at the weekly average, not the single number."]],
+  fixNote:"",
+  tools:'<div class="lbl" style="margin-top:0">Anchor · flex · move</div><div class="rows"><div><b>Anchor</b><span>2 meals a day with protein and vegetables. These are non-negotiable</span></div><div><b>Flex</b><span>1 or 2 planned meals you enjoy fully, with no guilt</span></div><div><b>Move</b><span>Walk, train or play. Do not let Sunday go still</span></div></div><div class="lbl">Drinks (approximate calories)</div><p class="muted" style="font-size:13px">Plan your weekend drinks. Tap + and − to see the total.</p><div id="drinks"></div><div class="note" id="drinkSum"></div><div class="lbl">Restaurant strategies</div><ul class="checks"><li class="muted" style="font-size:14px">· Order protein first, then build around it</li><li class="muted" style="font-size:14px">· Ask for sauces and dressings on the side</li><li class="muted" style="font-size:14px">· Choose one: the bread basket or the dessert</li><li class="muted" style="font-size:14px">· Alternate every drink with a glass of water</li><li class="muted" style="font-size:14px">· Eat slowly and stop when you are 80% full</li></ul><div class="note"><b>Still up on Wednesday?</b> Look at Saturday. One heavy meal is rarely the problem. Two heavy days plus no movement usually is.</div>'},
+ {id:"A",name:"The All-or-Nothing",short:"All-or-Nothing",gap:"mindset",
+  line:"One bad meal and the whole day is ruined.",
+  quote:"One slip and I am done",
+  checks:['I say "I will start over Monday" again and again',"I am either strict or completely off the plan","One off meal makes me write off the whole day","I feel guilty after eating certain foods",'I think of foods as "good" or "bad"','I skip meals to "make up" for a big one',"I avoid the scale when I have slipped","My progress comes in 2 to 3 week bursts"],
+  info:[["What is happening",'In a one-year study of women who had lost weight, all-or-nothing thinking predicted who regained it. The cycle: strict, slip, "ruined," quit or binge, guilt, strict again. The problem is rarely the slip. It is what the slip makes you decide.'],["The math","A pound of body fat is roughly 3,500 calories, so one big meal cannot undo a week of work. What does undo it is writing off the whole day, or week."],["The tell","Your off periods last longer than your strict ones, and you describe food in moral words: good, bad, cheat, earned."]],
+  fixTitle:"7-Day Fix",fixSub:"Build a floor, not a ceiling",
+  fix:[["Day 1","Write your good-enough day","Protein at every meal, a few vegetables and your steps. Hit that and the day is a win."],["Day 2","Build your flex list","Choose 5 foods you can have anytime, planned and guilt-free."],["Day 3","Practice the next-meal rule","After any off-plan meal, the next meal is a normal meal. No skipping, no punishing cardio."],["Day 4","Swap your words",'Replace "cheat," "bad" and "ruined" with "planned meal" and "unplanned meal."'],["Day 5","Plan an 80/20 week","Of 21 meals, plan about 3 flexible ones and enjoy them without guilt."],["Day 6","Rehearse a slip","Pick a likely scenario and script exactly what you will do next."],["Day 7","Score consistency","Count how many days hit your good-enough standard. Judge the week by that, not by the scale."]],
+  fixNote:"<b>Your goal:</b> 4 good-enough days out of 7 beats 2 perfect days and 5 lost ones. Consistency, not perfection, is what moves the needle.",
+  tools:'<div class="lbl" style="margin-top:0">Self-talk swaps</div><div class="swap"><s>I blew it. Might as well keep going.</s><em>→</em><span>One meal is one meal. Next meal is normal.</span></div><div class="swap"><s>I was bad today.</s><em>→</em><span>I had an unplanned meal. Back to my floor.</span></div><div class="swap"><s>I have to earn my food.</s><em>→</em><span>Food fuels me. Training is separate.</span></div><div class="swap"><s>I will start Monday.</s><em>→</em><span>I will start with my next meal.</span></div><div class="lbl">After a big meal</div><div class="rows"><div><b>1</b><span>Drink some water and carry on</span></div><div><b>2</b><span>Make the next meal a normal one</span></div><div><b>3</b><span>A walk is fine, as a reset and not a punishment</span></div><div><b>4</b><span>Log it without judgment and move on</span></div></div><div class="lbl">Rigid rules versus flexible rules</div><div class="swap"><s>No sugar, ever</s><em>→</em><span>Dessert 2 to 3 times a week</span></div><div class="swap"><s>Never eat after 7 pm</s><em>→</em><span>Eat when hungry, keep portions reasonable</span></div><div class="swap"><s>Perfect every day</s><em>→</em><span>Good enough on most days</span></div><div class="note"><b>Please note:</b> if food feels out of control, or you restrict, binge or purge, talk to a doctor or licensed professional. The National Alliance for Eating Disorders helpline is 866-662-1235 (weekdays) and findEDhelp.com lists treatment options.</div>'}
+];
+const L=["A","B","C","D"];
+const GAPS=[["Gap 1","The Intake Gap","You eat less than your body needs for the goal. Most common when the goal is to gain muscle or weight.",0],["Gap 2","The Awareness Gap","You think you know what you eat, but you have never measured it. In a classic 1992 study, people who said they could not lose weight on under 1,200 calories were actually eating about 47% more than they reported, and their metabolisms were normal.",1],["Gap 3","The Consistency Gap","Five great days are partly undone by two loose ones. In research on weekend patterns, people ate more on Saturdays and moved less on Sundays, and weight loss stalled on weekends.",2],["Gap 4","The Mindset Gap","A single slip turns into a lost day, week or month. In a one-year study of women who had lost weight, all-or-nothing thinking predicted who regained it.",3]];
+const Q=[
+ ["When I look at my results so far, I would say...",["I train hard but the scale and mirror barely move",'I eat "healthy" but results do not match my effort',"I make progress all week, then lose it","I have great stretches, then fall off completely"]],
+ ["If you asked what I ate yesterday...",["I would realize I skipped or forgot a meal","I could not tell you the calories or protein","Weekdays I know. Weekends are a blur","I knew exactly, until I slipped and stopped paying attention"]],
+ ["My weekdays versus my weekends...",["Both are light. I eat less than I should","Both are guesswork","Weekdays are strict, weekends are a free-for-all","One bad weekday can turn into a bad weekend"]],
+ ["After one off-plan meal I usually...",["Do not notice, since I eat light anyway","Do not think about it, since I do not track","Wait until Monday to get back on track","Decide the day is ruined and keep going"]],
+ ["My biggest frustration is...",["Training hard but not growing or changing","Doing everything right with no results","Losing my progress every weekend","Starting over again and again"]],
+ ["When I get busy...",["I forget to eat or eat very little","I grab whatever is quick and assume it is fine",'I stay strict at work and "make up for it" socially',"I either follow the plan perfectly or drop it entirely"]],
+ ["When it comes to tracking food...",["I assume I eat enough, so I have never tried","I avoid it. I trust my eyes","I track on weekdays but quit on weekends","I track strictly, then quit after a slip"]],
+ ["My hunger pattern...",["I am rarely hungry and get full fast","I snack and nibble without noticing","I am starving by Friday or Saturday","I swing between restricting and overeating"]],
+ ["My weigh-ins are...",["Flat for weeks","Up and down, and I cannot explain why","Up on Monday, down by Thursday, no net change",'I weigh when I am "good" and avoid the scale when I am not']],
+ ["At weekend meals out or social events...",["I still eat light","I estimate and move on",'Big meals and drinks. "It is the weekend"','"I already blew it, so..."']],
+ ["The words I use about food...",['"I am not that hungry"','"It was healthy, so it is fine"','"I earned it" or "it is the weekend"','"Cheat," "bad," "ruined," "start over"']],
+ ["What would help me most right now...",["A clear plan to eat more","Knowing my real numbers","A plan that includes my weekends","A way to recover from slips"]]
+];
+const MIX=[["Rule","Fix awareness first","If you are a Guesser, start there. You cannot fix what you cannot see.",[]],["Under-Eater + Guesser","Audit, then add","Do the 7-day audit. You will likely find the gap, then add calories on purpose.",[0,1]],["Guesser + Weekend","Audit your weekend","Make sure your 7-day audit includes a Saturday and a Sunday.",[1,2]],["Weekend + All-or-Nothing","Floor first, then plan","Set your good-enough day, then plan the weekend around it.",[2,3]],["Under-Eater + All-or-Nothing","Add slowly","Build up your intake gradually. Use the next-meal rule when you miss a meal.",[0,3]],["All three or four","One at a time","Fix one gap for 2 weeks, then add the next. Stacking everything usually backfires.",[9]]];
+
+/* who list */
+$("#who").innerHTML=P.map((p,i)=>`<button type="button" data-p="${i}"><b>${p.name}</b><span>"${esc(p.line)}"</span></button>`).join("");
+$("#who").addEventListener("click",e=>{const b=e.target.closest("button");if(b){openProfile(+b.dataset.p,"profile");}});
+$("#gapList").innerHTML=GAPS.map(g=>`<div><span class="badge">${g[0]}</span><h3>${g[1]}</h3><p class="muted" style="margin:0">${g[2]} <a href="#profiles" data-p="${g[3]}" style="color:var(--violet-soft)">(${P[g[3]].name.replace("The ","The ")})</a></p></div>`).join("");
+$("#gapList").addEventListener("click",e=>{const a=e.target.closest("a[data-p]");if(a){e.preventDefault();openProfile(+a.dataset.p,"profile")}});
+
+/* quiz */
+function renderQuiz(){
+  $("#qlist").innerHTML=Q.map((q,i)=>`<div class="q" id="q${i}"><h3><i>${i+1}</i><span>${esc(q[0])}</span></h3><div class="opts">${q[1].map((o,j)=>`<button type="button" class="opt" data-q="${i}" data-a="${j}" aria-pressed="${S.q[i]===j}"><b>${L[j]}</b><span>${esc(o)}</span></button>`).join("")}</div></div>`).join("");
+}
+function counts(){const c=[0,0,0,0];Object.values(S.q).forEach(v=>c[v]++);return c}
+function leaders(){const c=counts(),m=Math.max(...c);if(!m)return[];return c.map((v,i)=>v===m?i:-1).filter(i=>i>=0)}
+function updateQuiz(){
+  const n=Object.keys(S.q).length,c=counts(),m=Math.max(...c);
+  $("#qfill").style.width=(n/12*100)+"%";$("#qcount").textContent=n+" / 12";
+  $("#tally").innerHTML=c.map((v,i)=>`<div class="${v&&v===m?"lead":""}"><b>${v}</b><span>${L[i]} · ${P[i].short.toUpperCase()}</span></div>`).join("");
+  const r=$("#result");
+  if(n<12){r.innerHTML=n?`<p class="muted" style="margin:12px 0 0;font-size:13px">${12-n} to go. Your result appears when all 12 are answered.</p>`:"";updateTabs();return}
+  const sorted=c.map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]);
+  const top=sorted[0],second=sorted[1];
+  const even=Math.max(...c)-Math.min(...c)<=1;
+  let html="";
+  if(even){
+    html=`<span class="badge">Spread evenly</span><h3>Your basics are probably solid</h3><p class="muted">No single gap stands out. Skip to the Weekly Check-In and the Plateau Troubleshooter.</p><div class="actions"><a class="btn sm" href="#checkin">Weekly Check-In</a><a class="btn sm ghost" href="#faq">Troubleshooter</a></div>`;
+  }else{
+    const ties=leaders();
+    const strength=top[0]>=9?"A very clear profile":top[0]>=5?"A main profile with a second pattern":"A blend of two or more";
+    if(ties.length>1){
+      html=`<span class="badge">Tie · ${ties.map(i=>"Mostly "+L[i]).join(" + ")}</span><h3>You are a mix: ${ties.map(i=>P[i].name).join(" + ")}</h3><p class="muted">That is normal. Most people are a mix. Read both profiles, then check "More than one profile?" to see which to fix first.</p><div class="actions">${ties.map(i=>`<button class="btn sm" type="button" data-open="${i}">${P[i].short}</button>`).join("")}<a class="btn sm ghost" href="#mix">What to fix first</a></div>`;
+    }else{
+      const p=P[top[1]];
+      const sec=second[0]>=3?`<p class="muted" style="font-size:13px">Second pattern: <b style="color:var(--violet-soft)">${P[second[1]].name}</b> (${second[0]} of 12). See "More than one profile?" once your main fix is running.</p>`:"";
+      html=`<span class="badge">Mostly ${L[top[1]]} · ${top[0]} of 12</span><h3>You are ${p.name}</h3><p class="muted">Your biggest gap is ${p.gap}. ${strength}.</p>${sec}<div class="actions"><button class="btn sm" type="button" data-open="${top[1]}">Open my profile</button><button class="btn sm ghost" type="button" data-open="${top[1]}" data-sub="fix">Start my ${p.fixTitle.toLowerCase()}</button></div>`;
+    }
+  }
+  r.innerHTML=`<div class="result">${html}</div>`;
+  updateTabs();
+}
+$("#qlist").addEventListener("click",e=>{
+  const b=e.target.closest(".opt");if(!b)return;
+  const q=+b.dataset.q,a=+b.dataset.a;S.q[q]=a;save();
+  b.parentNode.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  updateQuiz();
+  const next=[...Array(12).keys()].find(i=>i>q&&S.q[i]===undefined);
+  if(next!==undefined){const el=$("#q"+next);const r=el.getBoundingClientRect();if(r.top>window.innerHeight*.75)el.scrollIntoView({block:"center",behavior:"smooth"})}
+  else if(Object.keys(S.q).length===12){$("#tally").scrollIntoView({block:"start",behavior:"smooth"})}
+});
+$("#result").addEventListener("click",e=>{const b=e.target.closest("[data-open]");if(b)openProfile(+b.dataset.open,b.dataset.sub||"profile")});
+$("#qreset").addEventListener("click",()=>{S.q={};save();renderQuiz();updateQuiz();toast("Answers cleared")});
+
+/* profiles */
+let cur=S.pcur??0,sub="profile";
+function updateTabs(){
+  const done=Object.keys(S.q).length===12,ld=done?leaders():[];
+  $("#tabs").innerHTML=P.map((p,i)=>`<button class="tab" role="tab" type="button" data-i="${i}" aria-selected="${i===cur}">${ld.includes(i)?'<span class="you">YOU</span>':""}${p.short}</button>`).join("");
+}
+function openProfile(i,s){cur=i;sub=s||"profile";S.pcur=i;save();updateTabs();renderProfile();$("#profiles").scrollIntoView({behavior:"smooth"})}
+$("#tabs").addEventListener("click",e=>{const b=e.target.closest(".tab");if(b){cur=+b.dataset.i;S.pcur=cur;save();updateTabs();renderProfile()}});
+$("#subtabs").addEventListener("click",e=>{const b=e.target.closest(".subtab");if(b){sub=b.dataset.s;renderProfile()}});
+function dots(n,total,hit){return Array.from({length:total},(_,k)=>`<i class="${k<n?"on":""} ${hit&&k<n?"hit":""}"></i>`).join("")}
+function renderProfile(){
+  const p=P[cur];
+  $("#subtabs").innerHTML=[["profile","The profile"],["fix",p.fixTitle],["tools","Tools"]].map(([k,t])=>`<button class="subtab" role="tab" type="button" data-s="${k}" aria-selected="${k===sub}">${t}</button>`).join("");
+  const v=$("#pview");
+  if(sub==="profile"){
+    const ck=S.c[p.id]||[];
+    v.innerHTML=`<h3 style="font-size:19px">${p.name}</h3><div class="quote">"${esc(p.quote)}"</div>
+    <div class="lbl">Check all that apply · 4 or more = you</div>
+    <ul class="checks">${p.checks.map((c,k)=>`<li><label class="chk"><input type="checkbox" id="c-${p.id}-${k}" data-k="${k}" ${ck.includes(k)?"checked":""}><span>${esc(c)}</span></label></li>`).join("")}</ul>
+    <div class="meter"><div class="dots" id="cdots"></div><span class="verdict" id="cverdict"></span></div>
+    ${p.info.map(x=>`<div class="lbl">${x[0]}</div><p>${esc(x[1])}</p>`).join("")}
+    <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="btn sm" type="button" data-go="fix">Start the ${p.fixTitle.toLowerCase()}</button><button class="btn sm ghost" type="button" data-go="tools">See the tools</button></div>`;
+    const upd=()=>{const ck=S.c[p.id]||[],n=ck.length,hit=n>=4;$("#cdots").innerHTML=dots(n,8,hit);const vd=$("#cverdict");vd.className="verdict"+(hit?" hit":"");vd.textContent=hit?`${n} of 8. This is you.`:`${n} of 8 checked`};
+    upd();
+    v.querySelectorAll(".checks input").forEach(inp=>inp.addEventListener("change",()=>{const k=+inp.dataset.k;let a=S.c[p.id]||[];a=inp.checked?[...new Set([...a,k])]:a.filter(x=>x!==k);S.c[p.id]=a;save();upd()}));
+  }else if(sub==="fix"){
+    const dd=S.d[p.id]||[];
+    v.innerHTML=`<h3 style="font-size:19px">${p.name} · ${p.fixTitle}</h3><div class="quote">${esc(p.fixSub)}</div>
+    <div class="daybar" style="margin-top:14px"><div class="dots" id="ddots"></div><span id="dcount"></span></div>
+    <div class="stack">${p.fix.map((d,k)=>`<div class="day ${dd.includes(k)?"done":""}" data-k="${k}"><div><span class="badge">${d[0]}</span><h3>${esc(d[1])}</h3><p class="muted" style="margin:0">${esc(d[2])}</p></div><button class="done-btn" type="button" aria-pressed="${dd.includes(k)}">${dd.includes(k)?"Done ✓":"Mark done"}</button></div>`).join("")}</div>
+    ${p.fixNote?`<div class="note">${p.fixNote}</div>`:""}`;
+    const upd=()=>{const n=(S.d[p.id]||[]).length;$("#ddots").innerHTML=dots(n,7,n===7);$("#dcount").textContent=n===7?"All 7 days done. Run the weekly check-in.":`${n} of 7 days done`};
+    upd();
+    v.querySelectorAll(".done-btn").forEach(b=>b.addEventListener("click",()=>{const row=b.closest(".day"),k=+row.dataset.k;let a=S.d[p.id]||[];const on=!a.includes(k);a=on?[...a,k]:a.filter(x=>x!==k);S.d[p.id]=a;save();row.classList.toggle("done",on);b.setAttribute("aria-pressed",on);b.textContent=on?"Done ✓":"Mark done";upd()}));
+  }else{
+    v.innerHTML=`<h3 style="font-size:19px;margin-bottom:12px">${p.name} · Tools</h3>`+p.tools;
+    if(p.id==="U")addons();
+    if(p.id==="W")drinks();
+  }
+  v.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>{sub=b.dataset.go;renderProfile()}));
+}
+function addons(){
+  const A=[["1 tbsp olive oil on food",120],["2 tbsp peanut butter",190],["1 cup whole milk",150],["1 oz almonds",165],["½ avocado",120],["1 cup cooked rice",205],["¼ cup granola",120],["1 cup whole-milk Greek yogurt",220]];
+  const sel=S.addons||[];
+  const tb=$("#addons tbody");
+  tb.innerHTML=A.map((a,k)=>`<tr><td style="width:36px"><label class="chk" style="padding:0"><input type="checkbox" id="ad-${k}" data-k="${k}" ${sel.includes(k)?"checked":""} aria-label="${esc(a[0])}"></label></td><td>${a[0]}</td><td>~${a[1]}</td></tr>`).join("");
+  const upd=()=>{const s=S.addons||[],t=s.reduce((x,k)=>x+A[k][1],0);$("#addonSum").innerHTML=t?`<b>Today's add-ons: ~${t} calories.</b> ${t<150?"Add one more to reach your first 150–250.":t<=250?"Right in the Day 3 range of 150–250.":t<=500?"That fits the week-2 target of 300 to 500 extra a day.":"That is more than the 300 to 500 target. Adding too much at once is a common reason people quit."}`:"<b>Pick 2 add-ons</b> to reach your first 150–250 extra calories."};
+  upd();
+  tb.querySelectorAll("input").forEach(i=>i.addEventListener("change",()=>{const k=+i.dataset.k;let a=S.addons||[];a=i.checked?[...a,k]:a.filter(x=>x!==k);S.addons=a;save();upd()}));
+}
+function drinks(){
+  const D=[["12 oz beer",150,150],["5 oz wine",125,125],["1.5 oz spirits",100,100],["Cocktail",150,300]];
+  S.dr=S.dr||[0,0,0,0];
+  const box=$("#drinks");
+  box.innerHTML=D.map((d,k)=>`<div class="rows"><div style="grid-template-columns:minmax(0,1fr) auto;align-items:center"><span><b style="color:var(--violet-soft)">${d[0]}</b> <span class="muted">${d[1]===d[2]?"~"+d[1]:d[1]+"–"+d[2]+"+"}</span></span><span style="display:flex;align-items:center;gap:8px"><button class="btn sm ghost" type="button" data-k="${k}" data-d="-1" aria-label="Remove ${d[0]}">−</button><b style="min-width:16px;text-align:center;font-variant-numeric:tabular-nums" id="dn${k}">${S.dr[k]}</b><button class="btn sm ghost" type="button" data-k="${k}" data-d="1" aria-label="Add ${d[0]}">+</button></span></div></div>`).join("");
+  const upd=()=>{let lo=0,hi=0,n=0;D.forEach((d,k)=>{lo+=d[1]*S.dr[k];hi+=d[2]*S.dr[k];n+=S.dr[k];$("#dn"+k).textContent=S.dr[k]});$("#drinkSum").innerHTML=n?`<b>${n} drink${n>1?"s":""}: ~${lo===hi?lo:lo+"–"+hi+"+"} calories.</b> Decide this limit before you go, and alternate each one with a glass of water.`:"<b>Set your drink limit</b> for the weekend before you go."};
+  upd();
+  box.addEventListener("click",e=>{const b=e.target.closest("button[data-k]");if(!b)return;const k=+b.dataset.k;S.dr[k]=Math.max(0,S.dr[k]+ +b.dataset.d);save();upd()});
+}
+
+/* mix */
+$("#mixList").innerHTML=MIX.map(m=>`<div><span class="badge">${m[0]}</span><h3>${m[1]}</h3><p class="muted" style="margin:0">${m[2]}</p></div>`).join("");
+
+/* 3-day test */
+const TD=["Day 1","Day 2","Weekend day"];
+$("#tdays").innerHTML=TD.map((d,k)=>{const t=S.t[k]||{};return`<div class="tday"><h3>${d}</h3><label for="tm${k}">Meals and portions</label><textarea class="field" id="tm${k}" data-k="${k}" data-f="m" placeholder="e.g. 2 eggs, 1 slice toast with butter">${esc(t.m||"")}</textarea><label for="tb${k}">Drinks and bites</label><textarea class="field" id="tb${k}" data-k="${k}" data-f="b" placeholder="e.g. latte, handful of chips while cooking">${esc(t.b||"")}</textarea><label>Hunger 1–5</label><div class="hunger" data-k="${k}">${[1,2,3,4,5].map(h=>`<button type="button" data-h="${h}" aria-pressed="${t.h===h}">${h}</button>`).join("")}</div></div>`}).join("");
+$("#tdays").addEventListener("input",e=>{const f=e.target;if(f.dataset.f){const k=f.dataset.k;S.t[k]=S.t[k]||{};S.t[k][f.dataset.f]=f.value;save()}});
+$("#tdays").addEventListener("click",e=>{const b=e.target.closest(".hunger button");if(!b)return;const w=b.parentNode,k=w.dataset.k,h=+b.dataset.h;S.t[k]=S.t[k]||{};S.t[k].h=S.t[k].h===h?null:h;save();w.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.h===S.t[k].h))});
+$("#copyTest").addEventListener("click",()=>{const txt=TD.map((d,k)=>{const t=S.t[k]||{};return`${d}\nMeals and portions: ${t.m||"-"}\nDrinks and bites: ${t.b||"-"}\nHunger: ${t.h||"-"}/5`}).join("\n\n");copy("My 3-Day Test\n\n"+txt,"Log copied")});
+
+/* 14-day plan */
+const PL1=[["Day 1","Take the quiz and pick your profile"],["Day 2–4","Run the 3-Day Test"],["Day 5–7","Begin your profile's 7-day fix"]];
+const PL2=[["Day 8","Do your first weekly check-in"],["Day 9–11","Repeat your profile's fix, adjusting from the check-in"],["Day 12–14","Add the second-profile fix, if you have one"]];
+S.plan=S.plan||[];
+function planRow(x,k){return`<li><label class="chk"><input type="checkbox" id="pl${k}" data-k="${k}" ${S.plan.includes(k)?"checked":""}><span><b style="color:var(--violet-soft)">${x[0]}</b> · ${x[1]}</span></label></li>`}
+$("#plan1").innerHTML=PL1.map((x,k)=>planRow(x,k)).join("");
+$("#plan2").innerHTML=PL2.map((x,k)=>planRow(x,k+3)).join("");
+function updPlan(){const n=S.plan.length;$("#planDots").innerHTML=dots(n,6,n===6);$("#planCount").textContent=n===6?"Plan complete. Do your day-14 review.":`${n} of 6 steps done`}
+updPlan();
+document.querySelectorAll("#plan1 input,#plan2 input").forEach(i=>i.addEventListener("change",()=>{const k=+i.dataset.k;S.plan=i.checked?[...new Set([...S.plan,k])]:S.plan.filter(x=>x!==k);save();updPlan()}));
+if(Object.keys(S.q).length===12&&!S.plan.includes(0)){S.plan.push(0);save();}
+
+/* check-in */
+const GOALS=[["gain","Gain"],["lose","Lose"],["maintain","Maintain"]];
+S.goal=S.goal||"lose";
+function renderGoal(){$("#goal").innerHTML=GOALS.map(([k,t])=>`<button class="btn sm ${S.goal===k?"":"ghost"}" type="button" data-g="${k}" aria-pressed="${S.goal===k}">${t}</button>`).join("")}
+$("#goal").addEventListener("click",e=>{const b=e.target.closest("[data-g]");if(b){S.goal=b.dataset.g;save();renderGoal();advise()}});
+renderGoal();
+$("#weeks").innerHTML=[0,1,2,3].map(w=>{const v=S.w[w]||{};return`<div class="wk"><b>Wk ${w+1}</b>${[0,1,2,3].map(i=>`<input class="field" inputmode="decimal" id="w${w}-${i}" data-w="${w}" data-i="${i}" aria-label="Week ${w+1} weigh-in ${i+1}" value="${esc((v.v||[])[i]??"")}">`).join("")}<span class="avg" id="avg${w}">–</span></div><div class="wkx"><span></span><input class="field" inputmode="numeric" id="wp${w}" data-w="${w}" data-p="1" placeholder="Protein days hit" aria-label="Week ${w+1} protein days hit" value="${esc(v.p||"")}"><input class="field" id="wn${w}" data-w="${w}" data-n="1" placeholder="Notes" aria-label="Week ${w+1} notes" value="${esc(v.n||"")}"></div>`}).join("");
+function avgOf(w){const v=((S.w[w]||{}).v||[]).map(parseFloat).filter(x=>!isNaN(x)&&x>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+function advise(){
+  const av=[0,1,2,3].map(avgOf);
+  av.forEach((a,w)=>{const n=((S.w[w]||{}).v||[]).filter(x=>parseFloat(x)>0).length;$("#avg"+w).textContent=a?a.toFixed(1)+(n<4?"*":""):"–"});
+  const have=av.map((a,i)=>a?i:-1).filter(i=>i>=0);
+  const el=$("#advice");
+  if(have.length<2){el.innerHTML=`<b>Enter 4 morning weigh-ins per week.</b> After two weeks the tracker compares your averages and tells you what to adjust. <span class="muted">(* = fewer than 4 weigh-ins)</span>`;return}
+  const a=have[have.length-1],b=have[have.length-2],ch=(av[a]-av[b])/av[b]*100,diff=av[a]-av[b];
+  const chs=(ch>=0?"+":"")+ch.toFixed(2)+"% ("+(diff>=0?"+":"")+diff.toFixed(1)+")";
+  let flat2=false;
+  if(have.length>=3){const c=have[have.length-3];flat2=Math.abs((av[a]-av[c])/av[c]*100)<0.25}
+  const flat=Math.abs(ch)<0.25;
+  let msg;
+  if(S.goal==="gain"){
+    if(ch>1)msg="Over 1% a week. Ease back. Much of it is probably fat.";
+    else if(ch>=0.25)msg="On track. Gaining about 0.25–0.5% a week is the target. Change nothing.";
+    else if(flat2)msg="Flat for 2 weeks. Add another 150–250 calories a day.";
+    else msg="Flat or down this week. Give it one more week before you change anything, then add 150–250 calories a day if it stays flat.";
+  }else if(S.goal==="lose"){
+    if(ch<=-0.25)msg="Moving down. Keep doing what you are doing.";
+    else if(flat2)msg="Flat for 2 weeks. If your tracking is accurate, trim 150–250 calories a day or add steps. Not sure it is accurate? Run the Guesser audit first.";
+    else msg="Flat or up this week. Check your weekends and sleep, and give it one more week before changing anything.";
+  }else{
+    const lb=Math.abs(av[a]-av[have[0]]);
+    msg=lb<=2?"Within about 1–2 lb. That is perfect. Change nothing.":"More than 2 lb away from where you started. Adjust one thing: food, steps or weekends.";
+  }
+  el.innerHTML=`<b>Week ${a+1} vs week ${b+1}: ${chs}.</b> ${msg}`;
+}
+$("#weeks").addEventListener("input",e=>{const f=e.target,w=f.dataset.w;if(w===undefined)return;S.w[w]=S.w[w]||{v:[]};S.w[w].v=S.w[w].v||[];if(f.dataset.i!==undefined)S.w[w].v[+f.dataset.i]=f.value;else if(f.dataset.p)S.w[w].p=f.value;else S.w[w].n=f.value;save();advise()});
+advise();
+
+/* myths / faq */
+const MY=[['"My metabolism is broken."','In the 1992 study, the metabolisms of people who "could not lose weight" were normal. Their intake was the difference.'],['"Healthy food cannot make me gain."',"Healthy food still has calories. Nuts, oils and smoothies are dense."],['"One bad meal ruins everything."',"About 3,500 calories make a pound of fat. One meal will not undo your week."],['"Skipping meals saves calories."',"It often leads to overeating later, and for the Under-Eater it makes the gap worse."],['"Cheat days reset my metabolism."',"They mostly add calories. Planned flex meals work better."],['"I will start Monday."',"The best day to start is your next meal."]];
+$("#myths").innerHTML=MY.map((m,i)=>`<details><summary><span><span class="badge" style="margin-right:8px">Myth ${i+1}</span>${esc(m[0])}</span></summary><p>${esc(m[1])}</p></details>`).join("");
+const FQ=[["How fast should I see results?","Give each fix 2 to 3 weeks. Judge by weekly averages, not single days."],["Do I have to count calories forever?","No. Use a one-week audit, then checkpoints."],["Do I need supplements?","No. Protein powder is a convenient way to hit protein. Food comes first."],["How much protein?","About 0.7–1 g per pound of bodyweight daily. Research found benefits level off around 1.6 g per kg."],["What about alcohol?","It adds calories and often leads to more eating. Set your limit before the event."]];
+$("#faq").innerHTML=FQ.map(f=>`<details><summary>${esc(f[0])}</summary><p>${esc(f[1])}</p></details>`).join("");
+$("#faq").id="faqList";document.querySelector("#faqList").closest("section").id="faq";
+const ST=["Is my tracking accurate?","Are weekends included?","Is my sleep short?","Did I give it 2 weeks?"];
+S.st=S.st||[];
+$("#stuck").innerHTML=ST.map((s,k)=>`<li><label class="chk"><input type="checkbox" id="st${k}" data-k="${k}" ${S.st.includes(k)?"checked":""}><span>${s}</span></label></li>`).join("");
+$("#stuck").addEventListener("change",e=>{const k=+e.target.dataset.k;S.st=e.target.checked?[...new Set([...S.st,k])]:S.st.filter(x=>x!==k);save()});
+
+/* sources */
+const SRC=[["Lichtman et al., 1992.","Discrepancy between self-reported and actual caloric intake and exercise in obese subjects. N Engl J Med."],["Burke, Wang & Sevick, 2011.","Self-monitoring in weight loss: a systematic review. J Am Diet Assoc."],["Racette et al., 2008.","Influence of weekend lifestyle patterns on body weight. Obesity."],["Orsama et al., 2014.","Weight rhythms: weight increases during weekends and decreases during weekdays. Obes Facts."],["Byrne, Cooper & Fairburn, 2004.","Psychological predictors of weight regain in obesity. Behav Res Ther."],["Palascha et al., 2015.","How does thinking in black and white terms relate to eating behavior and weight regain? J Health Psychol."],["Morton et al., 2018.","Protein supplementation and resistance training gains. Br J Sports Med."],["Al Khatib et al., 2017.","Partial sleep deprivation and energy balance. Eur J Clin Nutr."]];
+$("#sources").innerHTML=SRC.map(s=>`<div><b style="color:var(--fg)">${s[0]}</b> ${s[1]}</div>`).join("")+`<div style="color:var(--dim)">Calorie and protein values are approximate. Study findings describe groups and associations, not individual guarantees.</div>`;
+
+document.querySelectorAll("[data-copy]").forEach(b=>b.addEventListener("click",()=>copy(b.dataset.copy,`Copied "${b.dataset.copy}". Paste it in a DM to @alphatrainerhq`)));
+
+renderQuiz();updateQuiz();renderProfile();
+})();
+</script>
+
+</body>
+</html>
