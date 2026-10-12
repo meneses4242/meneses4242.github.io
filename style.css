@@ -194,3 +194,6 @@ footer a{color:var(--tq);text-decoration:none;text-shadow:0 0 10px rgba(var(--ac
 .thanks{min-height:70vh;display:flex;align-items:center}
 .thanks-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px}
 @media(max-width:600px){.row2{grid-template-columns:1fr}.aform fieldset{padding:22px 16px}.apply{padding:36px 0 70px}}
+.aform label:not(.chipr),.aform .label{display:block}
+.aform label>input:not([type=radio]),.aform label>select,.aform label>textarea,.aform label>.range{display:block;margin-top:8px}
+.aform label>.range{display:flex}
