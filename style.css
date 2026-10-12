@@ -35,3 +35,9 @@ h4{font-size:1.4rem;color:#eef1f3;margin:4px 0 8px}
 footer{padding:30px 0;border-top:1px solid #1a1f22;text-align:center;font-family:Oswald,sans-serif;letter-spacing:.2em;color:#9aa3ab}
 footer a{color:var(--tq);text-decoration:none}
 @media(max-width:800px){.tiers,.steps{grid-template-columns:1fr}section{padding:64px 0}.card{padding:26px}}
+.logo{display:flex;align-items:center;gap:10px}.logo img{height:36px;width:auto}
+.hero-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center}
+.hero-logo{position:relative;text-align:center}
+.hero-logo:before{content:"";position:absolute;inset:5%;background:radial-gradient(circle,rgba(212,160,40,.28),rgba(0,209,209,.08) 55%,transparent 70%);filter:blur(10px)}
+.hero-logo img{position:relative;width:100%;max-width:440px;filter:drop-shadow(0 0 30px rgba(230,170,40,.35));-webkit-mask-image:radial-gradient(ellipse 72% 72% at center,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse 72% 72% at center,#000 62%,transparent 100%)}
+@media(max-width:800px){.hero-grid{grid-template-columns:1fr}.hero-logo{order:-1}.hero-logo img{max-width:280px}}
