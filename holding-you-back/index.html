@@ -11,8 +11,8 @@
 /* Black + chrome, matched to the Back Workout page. Layout: single phone-width column of numbered "stations"; sticky progress rail on top; quiz routes into a tabbed profile console. Single dark look, matching the printed guide. */
 :root{
   --void:#000000; --panel:#0D0F12; --panel2:#121418; --line:rgba(255,255,255,.11);
-  --violet:#F5F8FB; --violet-soft:#C4CDD8; --fg:#F1F4F7; --muted:#9FA8B4; --dim:#6B737E;
-  --ok:#5fe3a1; --warn:#ffb54d;
+  --violet:#19e6e6; --violet-soft:#8ff3f3; --fg:#F1F4F7; --muted:#9FA8B4; --dim:#6B737E;
+  --ok:#19e6e6; --warn:#19e6e6;
   --display:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
   --body:"Poppins",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -227,6 +227,27 @@ h2{background:linear-gradient(180deg,#ffffff 0%,#e3e6ea 40%,#8a929c 62%,#eef1f5 
 .tally .lead,.tally .lead b{color:#0A0B0D;text-shadow:0 1px 0 rgba(255,255,255,.45)}.tally .lead span{color:#1f2329;font-weight:700}
 </style>
 <style>[hidden]{display:none!important}img{max-width:100%}body{margin:0}</style>
+<style>
+/* Alpha Trainer turquoise accents over Steve's black + chrome base (no image filters/overlays) */
+:root{--tq:#19e6e6;--tqbtn:linear-gradient(180deg,#7ff6f6 0%,#2aeaea 38%,#19e6e6 55%,#0fc9c9 100%)}
+.btn,.tally .lead,.result .badge,.badge,.q h3 i,.opt[aria-pressed="true"]::before,.hunger button[aria-pressed="true"],.done-btn[aria-pressed="true"],.toast,.chk input:checked,.day.done .done-btn,.tab .you{background:var(--tqbtn);color:#001414}
+.btn{border-color:#9ff7f7;text-shadow:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 0 18px -4px rgba(25,230,230,.65)}
+.btn:hover{filter:none;background:linear-gradient(180deg,#a6f9f9 0%,#45eeee 45%,#19e6e6 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 0 26px -2px rgba(25,230,230,.8)}
+.btn.ghost{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(210,218,230,.10) 55%,rgba(210,218,230,.04));color:var(--tq);border-color:rgba(25,230,230,.6);box-shadow:var(--hi),var(--lo)}
+.btn.ghost:hover{background:rgba(25,230,230,.12)}
+.qfill{background:var(--tqbtn);box-shadow:0 0 10px rgba(25,230,230,.7)}
+.opt[aria-pressed="true"]{background:rgba(25,230,230,.10);border-color:var(--tq)}
+.tab[aria-selected="true"]{background:rgba(25,230,230,.10);border-color:var(--tq)}
+.tally .lead{box-shadow:0 0 18px rgba(25,230,230,.35)}
+.result{border-color:rgba(25,230,230,.65);box-shadow:var(--hi),0 0 30px -8px rgba(25,230,230,.5)}
+.offer.main{border-color:rgba(25,230,230,.65);box-shadow:var(--hi),var(--lift),0 0 28px -8px rgba(25,230,230,.5)}
+.pill{box-shadow:0 0 24px rgba(25,230,230,.3)}
+.note{border-left-color:var(--tq)}
+.dots i.on{background:#C4CDD8}.dots i.on.hit{background:var(--tq);box-shadow:0 0 8px rgba(25,230,230,.7)}
+.verdict.hit{color:var(--tq);text-shadow:0 0 10px rgba(25,230,230,.6)}
+.bar-brand,.kicker .code{text-shadow:0 0 10px rgba(25,230,230,.55)}
+h1{text-shadow:0 0 6px rgba(255,255,255,.45),0 0 16px rgba(210,218,230,.6),0 0 38px rgba(25,230,230,.45),0 0 70px rgba(25,230,230,.25)}
+</style>
 </head>
 <body>
 
