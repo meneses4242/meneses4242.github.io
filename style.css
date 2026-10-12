@@ -46,7 +46,7 @@ header,section,footer{position:relative;z-index:1}
 .nav:after{bottom:0}section:before,footer:before{top:0}
 .nav .wrap{display:flex;justify-content:space-between;align-items:center;height:68px}
 .logo{display:flex;align-items:center;gap:12px;font-weight:700;font-size:1.35rem;color:var(--text-strong);text-decoration:none}
-.logo img{height:42px;width:auto;filter:drop-shadow(0 0 8px rgba(var(--accent-rgb),.6))}
+.logo img{height:42px;width:auto}
 .logo span{color:var(--tq);text-shadow:0 0 12px rgba(var(--accent-rgb),.7)}
 /* buttons */
 .btn{display:inline-block;padding:14px 32px;background:var(--tq);color:#001414;font-weight:700;font-size:1.05rem;text-decoration:none;border:1px solid #bff;box-shadow:0 0 18px rgba(var(--accent-rgb),.6),0 0 44px rgba(var(--accent-rgb),.25),inset 0 0 10px rgba(255,255,255,.4);transition:.2s;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
